@@ -6,7 +6,7 @@ The above files constitute our project that focus upon real time chat with vario
     c)options to create a chat group and switch between them
     d)login,logiout,switching groups and many more features
 
-Procedure to run:
+Procedure to run 
     in vscode terminal:-
                       1) npm install
                       2)npm start
