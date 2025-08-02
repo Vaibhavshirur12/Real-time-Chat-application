@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WELCOME TO REAL CHAT</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    :root {
+      --primary: #009688;
+      --primary-light: #33c9ba;
+      --accent: #ffcb05;
+      --danger: #ee3d55;
+      --background: #e2f5f3;
+      --white: #fff;
+      --card: #fafffc;
+      --input: #e3f8f5;
+      --secondary: #ff477e;
+      --room-bar: #22d6b1;
+    }
+    html, body {
+      padding:0; margin:0; height:100%; min-height:100vh;
+      width:100vw; min-width:100vw;
+      box-sizing: border-box;
+      position:relative;
+    }
+    /* Designer background: multiple gradients + SVG blobs */
+    body::before {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background:
+        radial-gradient(circle at 80vw 15vh, #33c9ba55 0, transparent 220px),
+        radial-gradient(ellipse 340px 160px at 15vw 82vh, #ffcb0533 0, transparent 100%),
+        repeating-linear-gradient(120deg, #e2f5f3 0 60px, #caf1e555 60px 120px),
+        linear-gradient(120deg, #e2f5f3 75%, #fffde7 100%);
+      pointer-events: none;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 1;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: url('data:image/svg+xml;utf8,<svg width="100vw" height="100vh" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="675" cy="95" rx="110" ry="51" fill="%2333c9ba" fill-opacity="0.19"/><ellipse cx="146" cy="542" rx="90" ry="38" fill="%23ff477e" fill-opacity="0.14"/><ellipse cx="580" cy="490" rx="90" ry="30" fill="%23ffcb05" fill-opacity="0.16"/><ellipse cx="130" cy="70" rx="53" ry="40" fill="%23009688" fill-opacity="0.12"/></svg>');
+      background-repeat: no-repeat;
+      background-size: cover;
+      opacity: 0.66;
+      pointer-events: none;
+      filter: blur(2px);
+    }
+    body {
+      width:100vw; height:100vh;
+      min-height:100vh;
+      min-width:100vw;
+      display: flex; align-items: flex-start; justify-content: center;
+      background: transparent;
+      z-index: 2;
+    }
+    #container {
+      position: relative;
+      z-index: 3;
+      width: 100vw;
+      min-height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 5vh;
+    }
+    #login-area, #chat {
+      width: 100%;
+      max-width: 600px;
+      min-height: 75vh;
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow: 0 8px 32px #7ed6c85f;
+      margin: 0 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      box-sizing: border-box;
+      padding-bottom: 32px;
+    }
+    #login-area {padding: 0;}
+    #login-greeting {
+      font-size: 2.2em;
+      font-weight: 900;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 20px;
+      padding: 22px 28px 20px 28px;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 40px;
+      margin-top: 38px;
+      box-shadow: 0 3px 17px #24ccc87a;
+      width: 96%;
+      max-width: 580px;
+      align-self:center;
+    }
+    #login-name {
+      width: 68%; max-width:380px; min-width:180px;
+      align-self:center;
+      padding: 15px 19px;
+      border-radius: 8px;
+      border: 2px solid var(--primary);
+      margin: 28px 0 18px 0;
+      background: var(--input);
+      font-size: 1.19em; color: #222;
+    }
+    #login-btn {
+      background: var(--accent);
+      color: var(--primary);
+      border: none;
+      padding: 18px 50px;
+      border-radius: 9px;
+      font-size: 1.14em;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 16px #ffe08245;
+      letter-spacing: .9px;
+      min-width: 110px;
+    }
+    #login-error {
+      color: var(--danger);
+      min-height: 22px;
+      font-weight: 700;
+      margin-top: 9px;
+      width: 220px;
+      text-align: center;
+    }
+    #chat {display:none;}
+    #room-bar {
+      background: var(--room-bar);
+      color: #fff;
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 22px 15px 22px;
+      border-radius: 20px 20px 0 0;
+      font-weight: 700;
+      gap: 12px;
+      box-sizing: border-box;
+      min-width: 100%;
+    }
+    #current-room {flex:1; min-width:110px; word-break: break-all;}
+    #new-room {
+      border: none; background: var(--primary-light);
+      color: #fff; border-radius: 8px;
+      padding: 11px 18px;
+      font-size: 17px;
+      width: 148px; min-width: 80px; margin-right: 5px;
+    }
+    #room-bar button {
+      background: var(--secondary);
+      color: #fff;
+      border-radius: 10px;
+      padding: 13px 34px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 17px;
+      white-space: nowrap;
+      min-width: 100px;
+      flex-shrink: 0;
+      margin-bottom: 0;
+      margin-left: 0;
+      box-shadow: 0px 3px 12px #ff477e28;
+      margin-right: 0;
+    }
+    #room-bar button#logout-btn {
+      margin-left: 7px;
+    }
+    #online-users {
+      font-size: 17px;
+      padding: 15px 32px 13px 28px;
+      background: #b9f6ca;
+      color: #104d4d;
+      width: 100%;
+      border-bottom: 1px solid #e0f2f1;
+      letter-spacing: .37px;
+      box-sizing: border-box;
+    }
+    #typing-indicator {
+      font-size: 16px;
+      min-height: 19px;
+      color: #ff477e;
+      font-style: italic;
+      background: #e1f7fd;
+      border-bottom: 1px solid #edf6f9;
+      width: 100%; box-sizing: border-box;
+      padding: 7px 18px;
+    }
+    #messages {
+      width: 100%;
+      padding: 28px 0 17px 0;
+      min-height: 22vh; height: 38vh; max-height: 44vh;
+      background: var(--white);
+      display: flex; flex-direction: column; gap: 18px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    #messages li {
+      border-radius: 23px 23px 11px 27px;
+      padding: 17px 34px 15px 26px;
+      font-size: 21px;
+      align-self: flex-start;
+      max-width: 82vw;
+      width:fit-content;
+      background: var(--other);
+      margin-left: 6%;
+      margin-right: 6vw;
+      box-shadow: 0 3px 9px #00bf8f13;
+      line-height:1.7;
+    }
+    #messages li.my {
+      background: var(--primary);
+      color: #fff;
+      align-self: flex-end;
+      border-radius: 27px 27px 21px 29px;
+      margin-right: 6%;
+      margin-left: 9vw;
+    }
+    #messages li.oth {
+      background: var(--white);
+      color: #333;
+      align-self: flex-start;
+    }
+    .emote {
+      font-size: 25px;
+      margin-right: 12px;
+    }
+    .bubble-meta {
+      font-size: 13px;
+      color: #868686;
+      margin-left: 18px;
+    }
+    #form {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      width: 100%;
+      background: #d0f5eb;
+      border-top: 1px solid #b2dfdb;
+      padding: 12px 12px 9px 12px;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+      gap:8px;
+      min-height: 60px;
+    }
+    #input {
+      flex: 1 1 0; min-width: 60px;
+      border: none;
+      padding: 16px 8px 16px 17px;
+      font-size: 20px;
+      background: var(--white);
+      color: #273154;
+      border-radius: 6px;
+      margin-right: 8px;
+      min-width:0;
+    }
+    #send-btn {
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
+      padding: 0 24px;
+      border-radius: 13px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    #emoji-bar {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      overflow-x: auto;
+      max-width: 320px;
+      margin-left: 10px;
+      margin-right: 0;
+      padding-bottom: 4px;
+      flex-shrink: 1;
+    }
+    .emote-btn {
+      font-size: 25px;
+      margin: 0 2px;
+      cursor: pointer;
+      padding: 6px 7px;
+      background: none;
+      border: none;
+      border-radius: 12px;
+      transition: filter .13s,transform .11s, background .12s;
+      flex-shrink: 0;
+    }
+    .emote-btn:hover {
+      filter: drop-shadow(0 1px 7px #ffcb05a7) brightness(1.11);
+      background: #e4fff5;
+      transform: scale(1.14) rotate(2deg);
+    }
+    #notification {
+      color: #fff;
+      font-size: 17px;
+      margin: 20px auto 0 auto;
+      max-width: 500px;
+      text-align: center;
+      background: var(--danger);
+      padding: 15px 0 15px 0;
+      border-radius: 15px;
+      box-shadow: 0 2px 15px #ee3d5539;
+      opacity:0;
+      transition: opacity .18s, transform .23s cubic-bezier(.97,0,.11,1.02);
+      position: fixed; left: 50%; top: 18px; transform: translateX(-50%) translateY(-35px);
+      z-index:99;
+    }
+    #notification.show {opacity:1;transform:translateX(-50%) translateY(0);}
+    @media (max-width: 900px) {
+      #login-area, #chat {max-width:99vw;}
+      #emoji-bar {max-width:35vw;}
+    }
+    @media (max-width: 700px) {
+      #login-area, #chat {max-width:98vw;margin:0 3vw;}
+      #emoji-bar {max-width:60vw;}
+      #login-greeting, #messages li, #room-bar, #online-users, #typing-indicator {padding-left: 2vw; padding-right: 2vw;}
+      #form {padding-left: 2vw; padding-right: 2vw;}
+      #messages li {font-size: 17.5px;}
+      #new-room {padding: 8px 9px; width: 80px;}
+      #switch-room,#logout-btn{padding:7px 13px;font-size:95%;}
+    }
+    @media (max-width: 500px) {
+      #container {padding-top: 2vh;}
+      #login-area, #chat {margin: 0 1vw;}
+      #login-greeting {padding: 10px;}
+      #login-name {width: 97vw;}
+      #room-bar, #online-users, #typing-indicator {font-size: 12.5px;}
+      #form, #messages {padding: 0;}
+      #input, #send-btn, .emote-btn {font-size: 14px;}
+      #messages li {padding: 8px 7px 8px 11px;}
+      .emote-btn{padding:6px 7px;}
+      #emoji-bar{max-width:95vw;}
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="login-area">
+      <div id="login-greeting">WELCOME TO REAL CHAT</div>
+      <input id="login-name" placeholder="Choose a username..." maxlength="20"/>
+      <button id="login-btn">Login</button>
+      <div id="login-error"></div>
+    </div>
+    <div id="chat">
+      <div id="room-bar">
+        <span id="current-room"></span>
+        <input id="new-room" placeholder="Join/Create room..." maxlength="15" />
+        <button id="switch-room">Switch</button>
+        <button id="logout-btn">Logout</button>
+      </div>
+      <div id="online-users"></div>
+      <div id="typing-indicator"></div>
+      <ul id="messages"></ul>
+      <form id="form" autocomplete="off">
+        <input id="input" autocomplete="off" placeholder="Type a message..." />
+        <button type="submit" id="send-btn">Send</button>
+        <div id="emoji-bar">
+          <button type="button" class="emote-btn" title="Smile">&#128512;</button>
+          <button type="button" class="emote-btn" title="Love">&#128525;</button>
+          <button type="button" class="emote-btn" title="Fire">&#128293;</button>
+          <button type="button" class="emote-btn" title="Thumbs Up">&#128077;</button>
+          <button type="button" class="emote-btn" title="Party">&#127881;</button>
+          <button type="button" class="emote-btn" title="Celebrate">&#127881;</button>
+          <button type="button" class="emote-btn" title="Laugh">&#128514;</button>
+          <button type="button" class="emote-btn" title="Cool">&#128526;</button>
+          <button type="button" class="emote-btn" title="Eyes">&#128064;</button>
+          <button type="button" class="emote-btn" title="Starstruck">&#129321;</button>
+          <button type="button" class="emote-btn" title="Praise">&#128588;</button>
+        </div>
+      </form>
+    </div>
+    <div id="notification"></div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
